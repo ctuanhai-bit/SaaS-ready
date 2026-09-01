@@ -1,0 +1,16 @@
+FROM maven:3.9.9-eclipse-temurin-17 AS build
+WORKDIR /workspace
+COPY . .
+RUN mvn -pl yudao-server -am -DskipTests package
+
+FROM eclipse-temurin:17-jre-alpine
+RUN apk add --no-cache curl tzdata \
+    && addgroup -S hotel \
+    && adduser -S -G hotel hotel \
+    && mkdir -p /app /var/log/hotel-pms \
+    && chown -R hotel:hotel /app /var/log/hotel-pms
+WORKDIR /app
+COPY --from=build --chown=hotel:hotel /workspace/yudao-server/target/yudao-server.jar /app/hotel-pms.jar
+USER hotel
+EXPOSE 48080
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS:-} -jar /app/hotel-pms.jar --spring.profiles.active=prod"]

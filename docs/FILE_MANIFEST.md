@@ -21,8 +21,11 @@
 | `yudao-module-infra/` | 复制后裁剪装配 | 文件、配置、任务、日志 |
 | `yudao-module-merchant/` | 复制后改名义 | 酒店资料与酒店上下文 |
 | `yudao-module-booking/` | 复制后重构应用层 | 酒店领域核心 |
-| `yudao-server/` | 复制后重写 POM/配置 | 社区版启动模块 |
+| `yudao-server/` | 复制后重写 POM/配置 | 社区版启动模块与本地/生产配置 |
 | `yudao-ui/yudao-ui-admin-vue3/` | 复制后裁剪 | 管理端基础与酒店页面 |
+| `compose.production.yaml`、`.env.production.example` | 社区版新增 | 无凭据生产编排与配置模板 |
+| `deploy/` | 社区版新增 | 后端/管理端镜像、Nginx 与幂等初始化脚本 |
+| `docs/PRODUCTION_DEPLOYMENT.md` | 社区版新增 | 部署、备份、升级、回退与 TLS 指南 |
 
 ## 3. 明确排除
 
@@ -31,7 +34,7 @@
 - `yudao-module-pay/`
 - `yudao-module-settlement/`
 - `yudao-ui/saas-jd-uniapp/`
-- 生产部署、服务器运维和品牌专属脚本
+- 商业生产凭据、真实服务器地址和品牌专属运维脚本
 - `script/miniapp-upload/`
 - `script/openapi-acceptance/`
 - `docs/acceptance/`

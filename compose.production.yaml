@@ -1,0 +1,128 @@
+name: hotel-pms-community
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?set MYSQL_DATABASE in .env.production}
+      MYSQL_USER: ${MYSQL_USER:?set MYSQL_USER in .env.production}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env.production}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env.production}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    expose:
+      - "3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/bootstrap:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production}
+    command:
+      - /bin/sh
+      - -ec
+      - exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  database-config:
+    image: mysql:8.4
+    restart: "no"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?set MYSQL_DATABASE in .env.production}
+      MYSQL_USER: ${MYSQL_USER:?set MYSQL_USER in .env.production}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env.production}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?set PUBLIC_BASE_URL in .env.production}
+    entrypoint: ["/bin/sh", "/scripts/configure-production-database.sh"]
+    volumes:
+      - ./deploy/scripts/configure-production-database.sh:/scripts/configure-production-database.sh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend.production
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?set MYSQL_DATABASE in .env.production}
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:?set MYSQL_DATABASE in .env.production}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+      DB_USERNAME: ${MYSQL_USER:?set MYSQL_USER in .env.production}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env.production}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DATABASE: ${REDIS_DATABASE:-0}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env.production}
+      HOTEL_PMS_ADMIN_URL: ${PUBLIC_BASE_URL:?set PUBLIC_BASE_URL in .env.production}
+      MYBATIS_ENCRYPTOR_PASSWORD: ${MYBATIS_ENCRYPTOR_PASSWORD:?set MYBATIS_ENCRYPTOR_PASSWORD in .env.production}
+      CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-true}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FILE: /var/log/hotel-pms/hotel-pms-community.log
+      JAVA_OPTS: ${JAVA_OPTS:--Xms512m -Xmx1024m -XX:+UseContainerSupport}
+      TZ: Asia/Shanghai
+    expose:
+      - "48080"
+    volumes:
+      - backend-logs:/var/log/hotel-pms
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:48080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      database-config:
+        condition: service_completed_successfully
+
+  admin:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.admin
+      args:
+        VITE_BASE_URL: ""
+        VITE_API_URL: /admin-api
+        VITE_APP_TITLE: ${ADMIN_TITLE:-Hotel PMS Community}
+        VITE_APP_CAPTCHA_ENABLE: ${CAPTCHA_ENABLED:-true}
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_HTTP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:8080/healthz | grep -q ok"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+  redis-data:
+  backend-logs:
