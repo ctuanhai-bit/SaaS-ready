@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+**/node_modules
+**/target
+**/dist
+**/.flattened-pom.xml
+.env.local
+.env.production
+.env.*.local
+artifacts
+tmp_*
+*.log
+*.bak

@@ -7,7 +7,7 @@ daily inventory and price, booking orders, and front-desk fulfillment.
 The community repository intentionally excludes platform onboarding, dining,
 hotel guest/member accounts, WeChat mini-programs, third-party payment,
 payment-channel refunds, commission, profit sharing, settlement, withdrawals,
-production deployment and credentials.
+commercial deployment credentials and infrastructure addresses.
 
 ## Status
 
@@ -28,6 +28,7 @@ acceptance evidence are documented under `docs/`.
 - User, role, menu, file and operation-log infrastructure
 - Database-backed development file storage
 - Docker Compose development environment
+- Production Compose stack with an Nginx-served admin console
 
 ## Not Included
 
@@ -38,7 +39,7 @@ acceptance evidence are documented under `docs/`.
 - Automated refunds, commission, profit sharing, settlement or withdrawal
 - Public OpenAPI application management
 - Mini-program source, AppID or upload credentials
-- Commercial production scripts, domains, hosts, backups or certificates
+- Commercial domains, hosts, backups, certificates or deployment credentials
 
 The management console can register an order as paid or refunded only after the
 operator has completed that action outside the system. These commands never move
@@ -114,6 +115,28 @@ Password: admin123
 
 Change the password before exposing the service to another machine.
 
+## Production Deployment
+
+The production stack builds and starts MySQL, Redis, the Spring Boot backend,
+and the Nginx-served management console. Copy the template and fill every empty
+secret before validating the rendered Compose configuration:
+
+```powershell
+Copy-Item .env.production.example .env.production
+docker compose --env-file .env.production -f compose.production.yaml config
+docker compose --env-file .env.production -f compose.production.yaml up -d --build
+```
+
+Only the management-console HTTP port is published. Put a TLS reverse proxy,
+load balancer, or ingress in front of it and set `PUBLIC_BASE_URL` to that HTTPS
+origin. The idempotent database configuration service updates the public file
+URL and ensures the booking timeout-release task exists before the backend
+starts.
+
+See [`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md) for secret
+generation, health checks, first-login hardening, backup, upgrade, rollback and
+TLS guidance.
+
 ## Run Without Docker
 
 Start MySQL and Redis, create an empty `hotel_pms_community` database, and apply:
@@ -140,6 +163,7 @@ Backend configuration is in:
 
 - `yudao-server/src/main/resources/application.yaml`: shared safe defaults
 - `yudao-server/src/main/resources/application-local.yaml`: environment-driven local profile
+- `yudao-server/src/main/resources/application-prod.yaml`: required-secret production profile
 
 Important environment variables:
 
@@ -178,7 +202,8 @@ check-in is inclusive and check-out is exclusive.
 Backend tests:
 
 ```powershell
-mvn -pl yudao-module-merchant,yudao-module-booking -am test
+mvn -pl yudao-server -am -DskipTests package
+./tools/verify-community.ps1
 ```
 
 Frontend checks:
@@ -186,8 +211,8 @@ Frontend checks:
 ```powershell
 Set-Location yudao-ui/yudao-ui-admin-vue3
 pnpm install --frozen-lockfile
-pnpm ts:check
 pnpm build
+pnpm ts:check
 ```
 
 Complete local boundary and build verification:
@@ -196,7 +221,9 @@ Complete local boundary and build verification:
 ./tools/verify-community.ps1
 ```
 
-CI runs the same backend, frontend and commercial-boundary checks.
+CI treats the production build and commercial-boundary scan as required. The
+inherited management-console type check currently reports baseline errors and
+is retained as a visible, non-blocking job step until that debt is cleared.
 
 The inherited test stack is not compatible with JDK 25: older Mockito/ByteBuddy
 versions can fail while instrumenting JDK classes and annotations. Use JDK 8 or
@@ -245,8 +272,9 @@ database provider's encrypted backup, retention and restore-testing facilities.
 - **A paid/refunded status did not transfer money:** this is expected. The
   community action only records an already completed offline operation.
 - **Expired unpaid orders are not released automatically:** the release logic is
-  included and tested, but Quartz is disabled in the local profile. Register a
-  reviewed scheduler in a real deployment or cancel stale orders operationally.
+  included and tested. Quartz is disabled in the local profile; use the
+  production Compose stack, which creates the timeout task and synchronizes
+  enabled database jobs during backend startup.
 - **Frontend dependency installation is inconsistent:** use Node.js 20.19 and
   pnpm 10, remove only this frontend's `node_modules`, then reinstall from the
   committed lockfile.

@@ -1,0 +1,92 @@
+server:
+  port: ${SERVER_PORT:48080}
+  shutdown: graceful
+  forward-headers-strategy: framework
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  autoconfigure:
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    druid:
+      web-stat-filter:
+        enabled: false
+      stat-view-servlet:
+        enabled: false
+    dynamic:
+      primary: master
+      strict: true
+      datasource:
+        master:
+          name: ${MYSQL_DATABASE:hotel_pms_community}
+          url: ${DB_URL}
+          username: ${DB_USERNAME}
+          password: ${DB_PASSWORD}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          initial-size: 5
+          min-idle: 5
+          max-active: 30
+          max-wait: 60000
+          validation-query: SELECT 1
+          test-while-idle: true
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT:6379}
+    database: ${REDIS_DATABASE:0}
+    password: ${REDIS_PASSWORD}
+    timeout: 5s
+  quartz:
+    auto-startup: true
+    job-store-type: memory
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org.quartz.scheduler.instanceName: hotel-pms-community
+      org.quartz.threadPool.threadCount: 4
+
+management:
+  endpoint:
+    health:
+      show-details: never
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+
+knife4j:
+  enable: ${SWAGGER_ENABLED:false}
+
+logging:
+  file:
+    name: ${LOG_FILE:/var/log/hotel-pms/hotel-pms-community.log}
+  level:
+    cn.iocoder.yudao.module.booking: ${LOG_LEVEL:INFO}
+    cn.iocoder.yudao.module.merchant: ${LOG_LEVEL:INFO}
+
+mybatis-plus:
+  encryptor:
+    password: ${MYBATIS_ENCRYPTOR_PASSWORD}
+
+yudao:
+  captcha:
+    enable: ${CAPTCHA_ENABLED:true}
+  security:
+    mock-enable: false
+  access-log:
+    enable: true
+  web:
+    admin-ui:
+      url: ${HOTEL_PMS_ADMIN_URL}
+
+justauth:
+  enabled: false
+
+debug: false
