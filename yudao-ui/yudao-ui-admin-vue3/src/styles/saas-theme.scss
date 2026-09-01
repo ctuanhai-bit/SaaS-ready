@@ -1,0 +1,331 @@
+.is-saas-view {
+  --el-color-primary: var(--saas-primary);
+  --el-color-primary-dark-2: #0b5f59;
+  --el-color-primary-light-3: #4f9a93;
+  --el-color-primary-light-5: #87bbb5;
+  --el-color-primary-light-7: #bed8d4;
+  --el-color-primary-light-8: #d5e6e3;
+  --el-color-primary-light-9: #edf5f3;
+  --el-border-radius-base: 6px;
+  --el-fill-color-light: var(--saas-surface-muted);
+  --el-border-color-light: var(--saas-border);
+  --el-text-color-primary: var(--saas-text);
+  --el-text-color-regular: #4d5a54;
+  --el-text-color-secondary: var(--saas-text-muted);
+  --el-table-header-bg-color: #eff2ed;
+  --el-table-row-hover-bg-color: #f4f8f5;
+  --el-table-border-color: #e2e7e1;
+
+  min-height: calc(100vh - var(--top-tool-height) - var(--tags-view-height));
+  color: var(--saas-text);
+  background: var(--saas-bg);
+
+  .el-card,
+  .el-dialog,
+  .el-message-box {
+    border-color: var(--saas-border);
+    border-radius: 8px;
+    box-shadow: var(--saas-shadow);
+  }
+
+  .el-card__header {
+    border-bottom-color: var(--saas-border);
+  }
+
+  .el-button {
+    border-radius: 6px;
+    font-weight: 650;
+  }
+
+  .el-input__wrapper,
+  .el-select__wrapper,
+  .el-textarea__inner,
+  .el-date-editor.el-input__wrapper {
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--saas-border) inset;
+  }
+
+  .el-input__wrapper.is-focus,
+  .el-select__wrapper.is-focused {
+    box-shadow: 0 0 0 1px var(--saas-primary) inset;
+  }
+
+  .el-table {
+    overflow: hidden;
+    border: 1px solid var(--saas-border);
+    border-radius: 8px;
+  }
+
+  .el-table th.el-table__cell {
+    color: #4c5a54;
+    font-weight: 700;
+  }
+
+  .el-pagination.is-background .el-pager li.is-active {
+    background: var(--saas-primary);
+  }
+
+  .el-alert--warning.is-light {
+    color: #765821;
+    background: var(--saas-accent-soft);
+    border: 1px solid #e4d2ae;
+  }
+}
+
+body
+  .is-saas-view
+  > :is(
+    .saas-admin-shell,
+    .saas-merchant-workbench,
+    .saas-dining-page,
+    .saas-staff-page,
+    .saas-front-desk-page,
+    .saas-finance-page,
+    .saas-merchant-profile,
+    .saas-table-page,
+    .saas-room-page,
+    .saas-order-page,
+    .saas-dining-reservation-page,
+    .saas-inventory-page,
+    .merchant-page,
+    .audit-page,
+    .platform-users-page,
+    .withdraw-audit-page,
+    .finance-overview,
+    .finance-report-page,
+    .carousel-page,
+    .home-config-page
+  ) {
+  min-height: calc(100vh - 108px);
+  color: var(--saas-text);
+  background: var(--saas-bg);
+  border-radius: 0;
+}
+
+body
+  .is-saas-view
+  :is(
+    .saas-merchant-workbench__hero,
+    .saas-dining-page__hero,
+    .saas-staff-page__hero,
+    .saas-front-desk-page__hero,
+    .saas-finance-page__hero,
+    .saas-merchant-profile__hero,
+    .saas-table-page__hero,
+    .saas-room-page__hero,
+    .saas-order-page__hero,
+    .saas-dining-reservation-page__hero,
+    .saas-inventory-page__hero,
+    .saas-admin-shell__overview
+  ) {
+  color: #fff;
+  background: #173c34;
+  border: 1px solid #28544a;
+  border-bottom: 3px solid var(--saas-accent);
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(18, 50, 43, 0.14);
+}
+
+body
+  .is-saas-view
+  :is(
+    .saas-merchant-workbench__hero,
+    .saas-dining-page__hero,
+    .saas-staff-page__hero,
+    .saas-front-desk-page__hero,
+    .saas-finance-page__hero,
+    .saas-merchant-profile__hero,
+    .saas-table-page__hero,
+    .saas-room-page__hero,
+    .saas-order-page__hero,
+    .saas-dining-reservation-page__hero,
+    .saas-inventory-page__hero,
+    .saas-admin-shell__overview
+  )
+  p {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+body
+  .is-saas-view
+  :is(
+    .saas-merchant-workbench__crumb,
+    .saas-dining-page__crumb,
+    .saas-staff-page__crumb,
+    .saas-front-desk-page__crumb,
+    .saas-finance-page__crumb,
+    .saas-merchant-profile__crumb,
+    .saas-table-page__crumb,
+    .saas-room-page__crumb,
+    .saas-order-page__crumb,
+    .saas-dining-reservation-page__crumb,
+    .saas-inventory-page__crumb
+  ) {
+  color: #d7c393;
+}
+
+body
+  .is-saas-view
+  :is(
+    .saas-merchant-workbench__context,
+    .saas-dining-page__context,
+    .saas-staff-page__context,
+    .saas-front-desk-page__context,
+    .saas-finance-page__context,
+    .saas-merchant-profile__context,
+    .saas-table-page__context,
+    .saas-room-page__context,
+    .saas-order-page__context,
+    .saas-dining-reservation-page__context,
+    .saas-inventory-page__context,
+    .saas-admin-shell__context-card
+  ) {
+  color: var(--saas-text);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d7e1dc;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+body
+  .is-saas-view
+  :is(
+    .saas-merchant-workbench__context,
+    .saas-dining-page__context,
+    .saas-staff-page__context,
+    .saas-front-desk-page__context,
+    .saas-finance-page__context,
+    .saas-merchant-profile__context,
+    .saas-table-page__context,
+    .saas-room-page__context,
+    .saas-order-page__context,
+    .saas-dining-reservation-page__context,
+    .saas-inventory-page__context,
+    .saas-admin-shell__context-card
+  )
+  strong {
+  color: var(--saas-primary);
+}
+
+body
+  .is-saas-view
+  :is(
+    .page-heading,
+    .merchant-page__header,
+    .audit-page__header,
+    .carousel-page__topbar,
+    .home-config-page__topbar,
+    .saas-admin-shell__topbar
+  ) {
+  padding-bottom: 18px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--saas-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body
+  .is-saas-view
+  :is(
+    .filter-panel,
+    .table-panel,
+    .main-panel,
+    .prototype-panel,
+    .carousel-panel,
+    .merchant-list,
+    .audit-column,
+    .finance-feature-card,
+    .inventory-calendar,
+    .inventory-bottom,
+    .withdraw-card,
+    .saas-admin-shell__panel,
+    .saas-admin-shell__metric-card,
+    .saas-merchant-workbench__metric-card,
+    .saas-dining-reservation-page__metric-card,
+    .saas-finance-page__metric-card,
+    .saas-table-page__metric-card,
+    .metric-card,
+    .audit-card,
+    .system-entry
+  ) {
+  background: var(--saas-surface);
+  border: 1px solid var(--saas-border);
+  border-radius: 8px;
+  box-shadow: var(--saas-shadow);
+  backdrop-filter: none;
+}
+
+body .is-saas-view .system-entry:hover {
+  border-color: var(--saas-primary);
+  box-shadow: 0 14px 32px rgba(15, 118, 110, 0.12);
+}
+
+body .is-saas-view .merchant-page .metric-card::after {
+  top: 0;
+  right: 20px;
+  width: 42px;
+  height: 3px;
+  background: var(--saas-accent);
+  border-radius: 0 0 3px 3px;
+}
+
+body .is-saas-view .merchant-identity__avatar {
+  background: var(--saas-primary) !important;
+  border-radius: 6px;
+}
+
+body .is-saas-view .saas-admin-shell__sidebar {
+  color: #cad6d0;
+  background: var(--saas-sidebar);
+  box-shadow: 10px 0 28px rgba(20, 35, 31, 0.12);
+}
+
+body .is-saas-view .saas-admin-shell__brand-logo {
+  background: var(--saas-primary);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+body .is-saas-view .saas-admin-shell__menu-item {
+  border-radius: 6px;
+}
+
+body .is-saas-view .saas-admin-shell__menu-item:is(.active, :hover) {
+  color: #fff;
+  background: var(--saas-sidebar-active);
+  border-color: rgba(193, 154, 85, 0.46);
+  box-shadow: inset 3px 0 0 var(--saas-accent);
+}
+
+body .is-saas-view .saas-admin-shell__btn {
+  border-radius: 6px;
+}
+
+body .is-saas-view .saas-admin-shell__btn.primary {
+  background: var(--saas-primary);
+  box-shadow: none;
+}
+
+body .is-saas-view .saas-admin-shell__hero-metric {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+}
+
+body .is-saas-view .saas-admin-shell__filter-bar,
+body .is-saas-view .saas-admin-shell__focus-item {
+  background: var(--saas-surface-muted);
+  border: 1px solid var(--saas-border);
+  border-radius: 6px;
+}
+
+body .is-saas-view .saas-admin-shell__focus-item span {
+  background: var(--saas-accent);
+}
+
+.el-dialog,
+.el-message-box {
+  border-radius: 8px;
+}

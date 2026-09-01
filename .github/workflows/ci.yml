@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - run: mvn -pl yudao-module-merchant,yudao-module-booking -am test
+
+  admin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: yudao-ui/yudao-ui-admin-vue3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: pnpm
+          cache-dependency-path: yudao-ui/yudao-ui-admin-vue3/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm ts:check
+      - run: pnpm build
+
+  boundary:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify commercial boundary and credentials
+        shell: pwsh
+        run: ./tools/verify-community.ps1 -SkipBuild

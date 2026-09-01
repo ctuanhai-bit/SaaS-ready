@@ -1,0 +1,10 @@
+FROM maven:3.9.9-eclipse-temurin-8 AS build
+WORKDIR /workspace
+COPY . .
+RUN mvn -pl yudao-server -am -DskipTests package
+
+FROM eclipse-temurin:8-jre
+WORKDIR /app
+COPY --from=build /workspace/yudao-server/target/yudao-server.jar /app/hotel-pms.jar
+EXPOSE 48080
+ENTRYPOINT ["java", "-jar", "/app/hotel-pms.jar", "--spring.profiles.active=local"]

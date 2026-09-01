@@ -1,0 +1,58 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-hotel_pms_community}
+      MYSQL_USER: ${MYSQL_USER:-hotel_pms}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-hotel_pms}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me-local-only}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/bootstrap:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-hotel_pms_community}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+      DB_USERNAME: ${MYSQL_USER:-hotel_pms}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-hotel_pms}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CAPTCHA_ENABLED: "false"
+      SERVER_PORT: 48080
+    ports:
+      - "${SERVER_PORT:-48080}:48080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+  redis-data:

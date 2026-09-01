@@ -1,0 +1,64 @@
+######################################################################
+# Build Tools
+
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+.flattened-pom.xml
+
+######################################################################
+# IDE
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/*
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+######################################################################
+# Others
+*.log
+*.bak
+*.xml.versionsBackup
+*.swp
+*.py[cod]
+**/__pycache__/
+/tmp_*
+
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml
+
+### JRebel ###
+rebel.xml
+
+application-my.yaml
+
+/artifacts/
+/yudao-ui/yudao-ui-admin-vue3/node_modules/
+/yudao-ui/yudao-ui-admin-vue3/.node_modules.partial/
+/yudao-ui/yudao-ui-admin-vue3/dist*/
+.env.local
+.env.*.local
+.DS_Store
+**/.DS_Store

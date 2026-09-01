@@ -1,0 +1,4 @@
+source_repository=internal-source:SaaS_JD
+source_ref=origin/main
+source_commit=86c590f61ee2abe0deb20fed4b02668a721181e6
+exported_at_utc=2026-09-01T02:01:38.9312097Z
